@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="arm-none-eabi-gcc noversion nomachine -mcpu=cortex-m4 -mthumb -Wall -ffunction-sections -g -O0 -c -DSTM32F407VG -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -D__ASSEMBLY__ -I..\..\..\workspace\SM332BLUE -I..\..\..\..\..\Users\Admin\Downloads\Trenlop\nhung -I..\..\..\workspace\SM332BLUE\cmsis_lib\include -I..\..\..\workspace -I..\..\..\..\..\Users\Admin\Downloads\Trenlop\nhung\hc05_stm32f4-master -I..\..\..\workspace\SM332BLUE\cmsis_boot -I..\..\..\workspace\SM332BLUE\cmsis_lib -I..\..\..\..\..\Users\Admin\Downloads\Trenlop\nhung\hc05_stm32f4-master\hc05_stm32f4-master -I..\..\..\workspace\SM332BLUE\cmsis -I..\..\..\workspace\SM332BLUE\semihosting -I..\..\..\workspace\SM332BLUE\STM32F4-Discovery">
+      <target file="stm32f4xx_exti.o" lastModified="150648e86c2">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_exti.c" lastModified="150648a944b"/>
+      </target>
+      <target file="stm32f4xx_gpio.o" lastModified="150648e8252">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_gpio.c" lastModified="1506447e0e9"/>
+      </target>
+      <target file="stm32f4xx_syscfg.o" lastModified="150648e7965">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_syscfg.c" lastModified="150648a957d"/>
+      </target>
+      <target file="startup_stm32f4xx.o" lastModified="150648e7c2b">
+         <source file="..\..\..\cmsis_boot\startup\startup_stm32f4xx.c" lastModified="1506447dee9"/>
+      </target>
+      <target file="system_stm32f4xx.o" lastModified="150648e82f3">
+         <source file="..\..\..\cmsis_boot\system_stm32f4xx.c" lastModified="1506447df41"/>
+      </target>
+      <target file="printf.o" lastModified="150648e81a4">
+         <source file="..\..\..\stdio\printf.c" lastModified="1506454ec0a"/>
+      </target>
+      <target file="stm32f4_discovery.o" lastModified="150648e7cbc">
+         <source file="..\..\..\STM32F4-Discovery\stm32f4_discovery.c" lastModified="150648a93b9"/>
+      </target>
+      <target file="misc.o" lastModified="150648e874b">
+         <source file="..\..\..\cmsis_lib\source\misc.c" lastModified="150644a77ad"/>
+      </target>
+      <target file="stm32f4_discovery_audio_codec.o" lastModified="150648e7a54">
+         <source file="..\..\..\STM32F4-Discovery\stm32f4_discovery_audio_codec.c" lastModified="150648a93f2"/>
+      </target>
+      <target file="stm32f4xx_dma.o" lastModified="150648e8425">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_dma.c" lastModified="150648a950d"/>
+      </target>
+      <target file="stm32f4xx_spi.o" lastModified="150648e855e">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_spi.c" lastModified="150648a9494"/>
+      </target>
+      <target file="stm32f4xx_rcc.o" lastModified="150648e80c8">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_rcc.c" lastModified="1506447c007"/>
+      </target>
+      <target file="stm32f4_discovery_callbacks.o" lastModified="150648e84a0">
+         <source file="..\..\..\stm32f4_discovery_callbacks.c" lastModified="150648a9413"/>
+      </target>
+      <target file="stm32f4xx_dac.o" lastModified="150648e7bc3">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_dac.c" lastModified="150648a9543"/>
+      </target>
+      <target file="sh_cmd.o" lastModified="150648e826b">
+         <source file="..\..\..\semihosting\sh_cmd.s" lastModified="150645ce2a7"/>
+      </target>
+      <target file="syscalls.o" lastModified="150648e8372">
+         <source file="..\..\..\syscalls\syscalls.c" lastModified="150645c975e"/>
+      </target>
+      <target file="stm32f4xx_i2c.o" lastModified="150648e8632">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_i2c.c" lastModified="150648a94cf"/>
+      </target>
+      <target file="stm32f4_discovery_lis302dl.o" lastModified="150648e87ed">
+         <source file="..\..\..\STM32F4-Discovery\stm32f4_discovery_lis302dl.c" lastModified="150648a9409"/>
+      </target>
+      <target file="semihosting.o" lastModified="150648e78b6">
+         <source file="..\..\..\semihosting\semihosting.c" lastModified="150645ce2a3"/>
+      </target>
+      <target file="main.o" lastModified="1507d9921e8">
+         <source file="..\..\..\..\..\..\..\Users\Admin\Downloads\Trenlop\nhung\hc05_stm32f4-master\hc05_stm32f4-master\main.c" lastModified="1507720bb79"/>
+      </target>
+      <target file="stm32f4xx_usart.o" lastModified="150648e7b1f">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_usart.c" lastModified="150644846ed"/>
+      </target>
+   </processor>
+</history>

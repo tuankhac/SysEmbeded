@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=SM332BLUE.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE -TC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE/arm-gcc-link.ld -g -L..\..\..\STM32F4-Discovery -lpdmfilter_gcc">
+      <target file="SM332BLUE.elf" lastModified="1507d9926f9">
+         <source file="..\obj\semihosting.o" lastModified="150648e78b6"/>
+         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="150648e7965"/>
+         <source file="..\obj\stm32f4_discovery_audio_codec.o" lastModified="150648e7a54"/>
+         <source file="..\obj\stm32f4xx_usart.o" lastModified="150648e7b1f"/>
+         <source file="..\obj\stm32f4xx_dac.o" lastModified="150648e7bc3"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="150648e7c2b"/>
+         <source file="..\obj\stm32f4_discovery.o" lastModified="150648e7cbc"/>
+         <source file="..\obj\main.o" lastModified="1507d9921e8"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="150648e80c8"/>
+         <source file="..\obj\printf.o" lastModified="150648e81a4"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="150648e8252"/>
+         <source file="..\obj\sh_cmd.o" lastModified="150648e826b"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="150648e82f3"/>
+         <source file="..\obj\syscalls.o" lastModified="150648e8372"/>
+         <source file="..\obj\stm32f4xx_dma.o" lastModified="150648e8425"/>
+         <source file="..\obj\stm32f4_discovery_callbacks.o" lastModified="150648e84a0"/>
+         <source file="..\obj\stm32f4xx_spi.o" lastModified="150648e855e"/>
+         <source file="..\obj\stm32f4xx_i2c.o" lastModified="150648e8632"/>
+         <source file="..\obj\stm32f4xx_exti.o" lastModified="150648e86c2"/>
+         <source file="..\obj\misc.o" lastModified="150648e874b"/>
+         <source file="..\obj\stm32f4_discovery_lis302dl.o" lastModified="150648e87ed"/>
+      </target>
+   </processor>
+</history>
