@@ -7,86 +7,100 @@ void UARTSend(const unsigned char * pucBuffer, unsigned long ulCount);
 volatile char received_string[MAX_STRLEN + 1]; // this will hold the received string
 void USART1_IRQHandler(void);
 
-//LIS302DL accelerometer
-LIS302DL_InitTypeDef LIS302DL_InitStruct;
-LIS302DL_FilterConfigTypeDef LIS302DL_FilterStruct;
-__IO int8_t X_Offset, Y_Offset, Z_Offset = 0x00;
-uint8_t Buffer[6];
-int i;
-/* Method definition ---------------------------------------------------------*/
-
+int speed = 0;
 int main(void) {
-
-//	unsigned char welcome_str[] = "xxyyzz\r\n";
-	unsigned char welcome_str[] = "welcome\r\n";
+	unsigned char data[] = "1";
 	u8 loop = 1;
 
-//  initPA15();
-	initPD15();
 	init_USART1(BT_BAUD);
-	init_LIS302DL();
+	SystemInit();
+	GPIOinit();
+	GPIOinit_Enable();
+	GPIO_SetBits(GPIOB, GPIO_Pin_4);
+	TimerInit();
 
 	while (loop) {
-		//Read and print the accelerometer values
-		LIS302DL_Read(Buffer, LIS302DL_OUT_X_ADDR, 6);
-		printf("%d, %d ,%d\n", Buffer[0], Buffer[2], Buffer[4]);
-		//Send data through the bluetooth communication
-		UARTSend(welcome_str, sizeof(welcome_str));
-		//Wait some time before ending the loop
-		Delay(10000000);
+		UARTSend(data, sizeof(data));
 	}
-	/* Disable SPI1 used to drive the MEMS accelerometre */
-	SPI_Cmd(LIS302DL_SPI, DISABLE);
-	/* Disable the UART connection */
-	USART_Cmd(USART1, DISABLE);
 }
 
 /**
  * @brief  This function handles USARTx global interrupt request
  * @param  None
  * @retval None
+ * this is the interrupt request handler (IRQ) for ALL USART1 interrupts
  */
-/*- Interruption handler -----------------------------------------------------*/
-typedef enum {
-	true = 1, false = !true
-} status;
-status check;
-// this is the interrupt request handler (IRQ) for ALL USART1 interrupts
+void GPIOinit_Enable() {
+	GPIO_InitTypeDef gpio_init2;
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+	gpio_init2.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
+	gpio_init2.GPIO_Mode = GPIO_Mode_OUT;
+	gpio_init2.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init2.GPIO_OType = GPIO_OType_PP;
+	gpio_init2.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOB, &gpio_init2);
+}
+void GPIOinit() {
+	GPIO_InitTypeDef gpio_init;
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+	gpio_init.GPIO_Pin = GPIO_Pin_6;
+	gpio_init.GPIO_Mode = GPIO_Mode_AF;
+	gpio_init.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init.GPIO_OType = GPIO_OType_PP;
+	gpio_init.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOB, &gpio_init);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
+
+}
+void TimerInit() {
+	TIM_TimeBaseInitTypeDef time_init;
+	TIM_OCInitTypeDef oc_init;
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+	uint16_t PrescalerValue = (uint16_t)((SystemCoreClock / 2) / 1000000)-1;
+	time_init.TIM_Period = 65535;
+	time_init.TIM_Prescaler = PrescalerValue;
+	time_init.TIM_ClockDivision = 0;
+	time_init.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM4, &time_init);
+	oc_init.TIM_OCMode = TIM_OCMode_PWM1;
+	oc_init.TIM_OutputState = TIM_OutputState_Enable;
+	oc_init.TIM_Pulse = 0;
+	oc_init.TIM_OCPolarity = TIM_OCPolarity_High;
+
+	TIM_OC1Init(TIM4, &oc_init);
+	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
+	oc_init.TIM_OutputState = TIM_OutputState_Enable;
+	oc_init.TIM_Pulse = 0;
+
+	TIM_ARRPreloadConfig(TIM4, ENABLE);
+	TIM_Cmd(TIM4, ENABLE);
+}
+
 void USART1_IRQHandler(void) {
+	static uint16_t RxByte = 0x00;
 
-	// check if the USART1 receive interrupt flag was set
-	if (USART_GetITStatus(USART1, USART_IT_RXNE)) {
-//	  i = USART_ReceiveData(USART1);
-//	  		if(i == 1){
-//	  			GPIO_WriteBit(GPIOD,GPIO_Pin_15,Bit_SET);		// Set '1' on PA8
-//	  			UARTSend("LED ON\r\n",sizeof("LED ON\r\n"));	// Send message to UART1
-//	  		}
-//	  		else if(i == 0){
-//	  			GPIO_WriteBit(GPIOD,GPIO_Pin_15,Bit_RESET);		// Set '0' on PA8
-//	  			UARTSend("LED OFF\r\n",sizeof("LED OFF\r\n"));
-//	  		}
-		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char t = USART1->DR; // the character from the USART1 data register is saved in t
-
-		/* check if the received character is not the LF character (used to determine end of string)
-		 * or the if the maximum string length has been been reached
-		 */
-		if ((t != '0') && (cnt < MAX_STRLEN)) {
-			received_string[cnt] = t;
-			cnt++;
-			check = true;
-		} else { // otherwise reset the character counter
-			cnt = 0;
-			check = false;
+	if (USART_GetITStatus(USART1, USART_IT_TC) == SET) {
+		if (USART_GetFlagStatus(USART1, USART_FLAG_TC)) {
+			USART_SendData(USART1, RxByte);
+			USART_ITConfig(USART1, USART_IT_TC, DISABLE);
 		}
-		if (check == true) {
-			GPIO_SetBits(GPIOD, GPIO_Pin_15);
-			UARTSend("LED ON\r\n", sizeof("LED ON\r\n")); // Send message to UART1
-		} else {
-			GPIO_ResetBits(GPIOD, GPIO_Pin_15);
-			UARTSend("LED OFF\r\n", sizeof("LED OFF\r\n"));
-		}
+		USART_ClearITPendingBit(USART1, USART_IT_TC);
 	}
+
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) {
+		if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) {
+			RxByte = USART_ReceiveData(USART1);
+			USART_ITConfig(USART1, USART_IT_TC, ENABLE);
+		}
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+	}
+	if(RxByte ==130) speed =70;
+	if(RxByte ==140) speed =10;
+	if(RxByte ==142) speed =50;
+	if(RxByte ==176) speed =90;
+	TIM4->CCR1 = speed * 65535 / 100; // 10% Duty cycle
+	//Wait some time before ending the loop
+	Delay(100000);
 }
 /*- Normal method ------------------------------------------------------------*/
 
@@ -96,59 +110,14 @@ void USART1_IRQHandler(void) {
  *@param ulCount the buffer's length
  */
 void UARTSend(const unsigned char *pucBuffer, unsigned long ulCount) {
-	//
 	// Loop while there are more characters to send.
-	//
 	while (ulCount--) {
-		while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET) {}
-		USART_SendData(USART1, (uint8_t) * pucBuffer++);
+		while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET) {
+		}
+		USART_SendData(USART1, (uint16_t) * pucBuffer++);
 		/* Loop until the end of transmission */
 	}
 }
-
-//void setPD15On() {
-//	// GPIO port bit set/reset low register,  Address offset: 0x18      */
-//	GPIOD->BSRRL = GPIO_Pin_15;
-//}
-//
-//void togglePD15() {
-//	//  GPIO port output data register,        Address offset: 0x14      */
-//	GPIOD->ODR ^= GPIO_Pin_15;
-//}
-
-/**
- * @brief  MEMS accelerometre management of the time out situation.
- */
-uint32_t LIS302DL_TIMEOUT_UserCallback(void) { while (1); }
-
-/*- Initialisation methods ---------------------------------------------------*/
-
-/**
- *@brief This method is the one provided by STMicroelectronic with the discoverycard demo. It is used to configure the LIS302DL accelerometer embedded on the discovery card.
- */
-void init_LIS302DL() {
-	/* MEMS configuration */
-	LIS302DL_InitStruct.Power_Mode = LIS302DL_LOWPOWERMODE_ACTIVE;
-	LIS302DL_InitStruct.Output_DataRate = LIS302DL_DATARATE_100;
-	LIS302DL_InitStruct.Axes_Enable = LIS302DL_XYZ_ENABLE;
-	LIS302DL_InitStruct.Full_Scale = LIS302DL_FULLSCALE_2_3;
-	LIS302DL_InitStruct.Self_Test = LIS302DL_SELFTEST_NORMAL;
-	LIS302DL_Init(&LIS302DL_InitStruct);
-
-	/* Required delay for the MEMS Accelerometre: Turn-on time = 3/Output data Rate
-	 = 3/100 = 30ms */
-	Delay(30);
-
-	/* MEMS High Pass Filter configuration */
-	LIS302DL_FilterStruct.HighPassFilter_Data_Selection =
-			LIS302DL_FILTEREDDATASELECTION_OUTPUTREGISTER;
-	LIS302DL_FilterStruct.HighPassFilter_CutOff_Frequency =
-			LIS302DL_HIGHPASSFILTER_LEVEL_1;
-	LIS302DL_FilterStruct.HighPassFilter_Interrupt =
-			LIS302DL_HIGHPASSFILTERINTERRUPT_1_2;
-	LIS302DL_FilterConfig(&LIS302DL_FilterStruct);
-}
-
 /* This function initializes the USART1 peripheral
  *
  * Arguments: baud rate --> the baud rate at which the USART is
@@ -177,25 +146,25 @@ void init_USART1(uint32_t baudrate) {
 	/* enable the peripheral clock for the pins used by
 	 * USART1, PB6 for TX and PB7 for RX
 	 */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
 	/* This sequence sets up the TX and RX pins
 	 * so they work correctly with the USART1 peripheral
 	 */
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // Pins 6 (TX) and 7 (RX) are used
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10; // Pins 6 (TX) and 7 (RX) are used
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF; // the pins are configured as alternate function so the USART peripheral has access to them
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz; // this defines the IO speed and has nothing to do with the baud rate!
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP; // this defines the output type as push pull mode (as opposed to open drain)
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL; // this activates the pull up resistors on the IO pins
 
-	GPIO_Init(GPIOB, &GPIO_InitStruct); // now all the values are passed to the GPIO_Init() function which sets the GPIO registers
+	GPIO_Init(GPIOA, &GPIO_InitStruct); // now all the values are passed to the GPIO_Init() function which sets the GPIO registers
 
 	/* The RX and TX pins are now connected to their AF
 	 * so that the USART1 can take over control of the
 	 * pins
 	 */
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1); //
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
 
 	/* Now the USART_InitStruct is used to define the
 	 * properties of USART1
@@ -225,21 +194,6 @@ void init_USART1(uint32_t baudrate) {
 	USART_Cmd(USART1, ENABLE);
 }
 
-void initPD15() {
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	/* Enable the GPIO_LED Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-
-	/* Configure the GPIO_LED pin */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
-}
-
 /*- Timing methods -----------------------------------------------------------*/
 
 /**
@@ -257,4 +211,7 @@ void TimingDelay_Decrement(void) {
  *@brief Method used to wait a certain amount of time
  *@param nCount the time you want to wait
  */
-void Delay(__IO uint32_t nCount) {	while (nCount--) {} }
+void Delay(__IO uint32_t nCount) {
+	while (nCount--)
+		;
+}
