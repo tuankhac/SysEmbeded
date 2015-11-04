@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <history>
-   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=SM332BLUE.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE -TC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE/arm-gcc-link.ld -g -L..\..\..\STM32F4-Discovery -lpdmfilter_gcc">
-      <target file="SM332BLUE.elf" lastModified="150c1dc552e">
-         <source file="..\obj\semihosting.o" lastModified="150c1dc42b0"/>
-         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="150c1dc435b"/>
-         <source file="..\obj\stm32f4_discovery_audio_codec.o" lastModified="150c1dc4436"/>
-         <source file="..\obj\stm32f4xx_usart.o" lastModified="150c1dc4530"/>
-         <source file="..\obj\stm32f4xx_dac.o" lastModified="150c1dc45cd"/>
-         <source file="..\obj\startup_stm32f4xx.o" lastModified="150c1dc462a"/>
-         <source file="..\obj\stm32f4_discovery.o" lastModified="150c1dc46a7"/>
-         <source file="..\obj\main.o" lastModified="150c1dc482e"/>
-         <source file="..\obj\stm32f4xx_rcc.o" lastModified="150c1dc4928"/>
-         <source file="..\obj\printf.o" lastModified="150c1dc49d4"/>
-         <source file="..\obj\stm32f4xx_gpio.o" lastModified="150c1dc4a70"/>
-         <source file="..\obj\sh_cmd.o" lastModified="150c1dc4a8f"/>
-         <source file="..\obj\system_stm32f4xx.o" lastModified="150c1dc4afd"/>
-         <source file="..\obj\syscalls.o" lastModified="150c1dc4b6a"/>
-         <source file="..\obj\stm32f4xx_dma.o" lastModified="150c1dc4c16"/>
-         <source file="..\obj\stm32f4_discovery_callbacks.o" lastModified="150c1dc4c83"/>
-         <source file="..\obj\stm32f4xx_spi.o" lastModified="150c1dc4d2f"/>
-         <source file="..\obj\stm32f4xx_i2c.o" lastModified="150c1dc4dfa"/>
-         <source file="..\obj\stm32f4xx_exti.o" lastModified="150c1dc4e77"/>
-         <source file="..\obj\misc.o" lastModified="150c1dc4ee5"/>
-         <source file="..\obj\stm32f4_discovery_lis302dl.o" lastModified="150c1dc4fc0"/>
-         <source file="..\obj\stm32f4xx_tim.o" lastModified="150c1dc5165"/>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=SM332BLUE.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE -TC:\CooCox\CoIDE\configuration\ProgramData\SM332BLUE/link.ld -g -L..\..\..\STM32F4-Discovery -lpdmfilter_gcc">
+      <target file="SM332BLUE.elf" lastModified="150d0925caf">
+         <source file="..\obj\semihosting.o" lastModified="150d08aade3"/>
+         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="150d08aae61"/>
+         <source file="..\obj\stm32f4_discovery_audio_codec.o" lastModified="150d08aaf51"/>
+         <source file="..\obj\stm32f4xx_usart.o" lastModified="150d08aafee"/>
+         <source file="..\obj\stm32f4xx_dac.o" lastModified="150d08ab071"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="150d08ab0d2"/>
+         <source file="..\obj\stm32f4_discovery.o" lastModified="150d08ab151"/>
+         <source file="..\obj\main.o" lastModified="150d09259ba"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="150d08ab2f4"/>
+         <source file="..\obj\printf.o" lastModified="150d08ab381"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="150d08ab3ff"/>
+         <source file="..\obj\sh_cmd.o" lastModified="150d08ab41f"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="150d08ab48f"/>
+         <source file="..\obj\syscalls.o" lastModified="150d08ab4f7"/>
+         <source file="..\obj\stm32f4xx_dma.o" lastModified="150d08ab585"/>
+         <source file="..\obj\stm32f4_discovery_callbacks.o" lastModified="150d08ab5ef"/>
+         <source file="..\obj\stm32f4xx_spi.o" lastModified="150d08ab682"/>
+         <source file="..\obj\stm32f4xx_i2c.o" lastModified="150d08ab71b"/>
+         <source file="..\obj\stm32f4xx_exti.o" lastModified="150d08ab78f"/>
+         <source file="..\obj\misc.o" lastModified="150d08ab7ff"/>
+         <source file="..\obj\stm32f4_discovery_lis302dl.o" lastModified="150d08ab971"/>
+         <source file="..\obj\stm32f4xx_tim.o" lastModified="150d08abac1"/>
       </target>
    </processor>
 </history>

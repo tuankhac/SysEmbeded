@@ -16,7 +16,8 @@ int main(void) {
 	SystemInit();
 	GPIOinit();
 	GPIOinit_Enable();
-	GPIO_SetBits(GPIOB, GPIO_Pin_4);
+	GPIO_SetBits(GPIOB, GPIO_Pin_12 | GPIO_Pin_14);
+	GPIO_ResetBits(GPIOB, GPIO_Pin_13 | GPIO_Pin_15);
 	TimerInit();
 
 	while (loop) {
@@ -33,7 +34,7 @@ int main(void) {
 void GPIOinit_Enable() {
 	GPIO_InitTypeDef gpio_init2;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	gpio_init2.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
+	gpio_init2.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	gpio_init2.GPIO_Mode = GPIO_Mode_OUT;
 	gpio_init2.GPIO_Speed = GPIO_Speed_100MHz;
 	gpio_init2.GPIO_OType = GPIO_OType_PP;
@@ -43,25 +44,27 @@ void GPIOinit_Enable() {
 void GPIOinit() {
 	GPIO_InitTypeDef gpio_init;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	gpio_init.GPIO_Pin = GPIO_Pin_6;
+	gpio_init.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 ;
 	gpio_init.GPIO_Mode = GPIO_Mode_AF;
 	gpio_init.GPIO_Speed = GPIO_Speed_100MHz;
 	gpio_init.GPIO_OType = GPIO_OType_PP;
 	gpio_init.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(GPIOB, &gpio_init);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
 }
 void TimerInit() {
 	TIM_TimeBaseInitTypeDef time_init;
 	TIM_OCInitTypeDef oc_init;
+
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-	uint16_t PrescalerValue = (uint16_t)((SystemCoreClock / 2) / 1000000)-1;
+	uint16_t PrescalerValue = (uint16_t)((SystemCoreClock / 2) / 1000000) - 1;
 	time_init.TIM_Period = 65535;
 	time_init.TIM_Prescaler = PrescalerValue;
 	time_init.TIM_ClockDivision = 0;
 	time_init.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM4, &time_init);
+
 	oc_init.TIM_OCMode = TIM_OCMode_PWM1;
 	oc_init.TIM_OutputState = TIM_OutputState_Enable;
 	oc_init.TIM_Pulse = 0;
@@ -72,8 +75,14 @@ void TimerInit() {
 	oc_init.TIM_OutputState = TIM_OutputState_Enable;
 	oc_init.TIM_Pulse = 0;
 
+	TIM_OC2Init(TIM4, &oc_init);
+	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
+	oc_init.TIM_OutputState = TIM_OutputState_Enable;
+	oc_init.TIM_Pulse = 0;
+
 	TIM_ARRPreloadConfig(TIM4, ENABLE);
 	TIM_Cmd(TIM4, ENABLE);
+
 }
 
 void USART1_IRQHandler(void) {
@@ -94,11 +103,41 @@ void USART1_IRQHandler(void) {
 		}
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 	}
-	if(RxByte ==130) speed =70;
-	if(RxByte ==140) speed =10;
-	if(RxByte ==142) speed =50;
-	if(RxByte ==176) speed =90;
+	if (RxByte == 130) { // UP
+		GPIO_SetBits(GPIOB, GPIO_Pin_12 | GPIO_Pin_14);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_13 | GPIO_Pin_15);
+	} else if (RxByte == 142) { // DOWN
+		GPIO_ResetBits(GPIOB, GPIO_Pin_12 | GPIO_Pin_14);
+		GPIO_SetBits(GPIOB, GPIO_Pin_13 | GPIO_Pin_15);
+	} else if (RxByte == 140) { //LEFT
+		GPIO_SetBits(GPIOB, GPIO_Pin_12);
+
+		GPIO_ResetBits(GPIOB, GPIO_Pin_13);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+	} else if (RxByte == 176) { //RIGHT
+		GPIO_SetBits(GPIOB, GPIO_Pin_14);
+
+		GPIO_ResetBits(GPIOB, GPIO_Pin_13);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+	} else if (RxByte == 194) { //UP SPEED
+		speed += 30;
+		if (speed >= 100)
+			speed = 100;
+	} else if (RxByte == 192) { //DOWN SPEED
+		speed -= 30;
+		if (speed < 20)
+			speed = 20;
+	} else if (RxByte == 128) { //STOP
+		speed = 0;
+	}
+
 	TIM4->CCR1 = speed * 65535 / 100; // 10% Duty cycle
+	TIM4->CCR2 = speed * 65535 / 100; // 10% Duty cycle
+//	TIM4->CCR3 = speed * 65535 / 100; // 10% Duty cycle
+	//set bit for pins PB 12 13 14 15
+
 	//Wait some time before ending the loop
 	Delay(100000);
 }
